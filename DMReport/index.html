@@ -1,0 +1,77 @@
+﻿<!DOCTYPE HTML>
+<html>
+        <head>
+                <script src="Chart.js"></script>
+                <script src="jquery.js"></script>
+                <script src="controller.js"></script>
+        </head>
+        <body>
+            <h1 style="margin-left: 30px;">Active User Percentage by (Week)：</h1>
+            <span style="margin-left: 30px;">Choose a group of admins who registered at:</span>
+            <select id="retentionDropDown" >
+                <!-- $TODO: consider get this list from server -->
+                <option>2013-3</option>c
+                <option>2013-4</option>
+                <option>2013-5</option>
+                <option>2013-6</option>
+                <option>2013-7</option>
+                <option>2013-8</option>
+                <option>2013-9</option>
+                <option>2013-10</option>
+                <option>2013-11</option>
+                <option>2013-12</option>
+                <option>2013-13</option>
+                <option>2013-14</option>
+                <option>2013-15</option>
+                <option>2013-16</option>
+                <option>2013-17</option>
+                <option>2013-18</option>
+                <option>2013-19</option>
+                <option>2013-20</option>
+                <option>2013-21</option>
+                <option>2013-22</option>
+                <option>2013-23</option>
+                <option>2013-24</option>
+                <option>2013-25</option>
+            </select>
+            <span>.($NOTE: 2013-3 means the 3rd week of 2013)</span>
+            <br />
+            <canvas id="myChart" width="800" height="400"></canvas>
+
+            <br />
+            <br />
+            <br />
+
+            <h1 style="margin-left: 30px;">Average Session Length：</h1>
+            <span style="margin-left: 30px;">Choose a group of admins who registered at:</span>
+            <select id="sessionLengthSelect" >
+                <!-- $TODO: consider get this list from server -->
+                <option>2013-3</option>c
+                <option>2013-4</option>
+                <option>2013-5</option>
+                <option>2013-6</option>
+                <option>2013-7</option>
+                <option>2013-8</option>
+                <option>2013-9</option>
+                <option>2013-10</option>
+                <option>2013-11</option>
+                <option>2013-12</option>
+                <option>2013-13</option>
+                <option>2013-14</option>
+                <option>2013-15</option>
+                <option>2013-16</option>
+                <option>2013-17</option>
+                <option>2013-18</option>
+                <option>2013-19</option>
+                <option>2013-20</option>
+                <option>2013-21</option>
+                <option>2013-22</option>
+                <option>2013-23</option>
+                <option>2013-24</option>
+                <option>2013-25</option>
+            </select>
+            <span>.($NOTE: 2013-3 means the 3rd week of 2013)</span>
+            <br />
+            <canvas id="sessionLengthCanvas" width="800" height="400"></canvas>
+        </body>
+</html>
