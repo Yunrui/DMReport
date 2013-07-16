@@ -1,77 +1,133 @@
 ﻿<!DOCTYPE HTML>
 <html>
         <head>
-                <script src="Chart.js"></script>
-                <script src="jquery.js"></script>
-                <script src="controller.js"></script>
+            <title>Report for SPO</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+            <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+            <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+            <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+            <script src="Chart.js"></script>
+            <script src="controller.js"></script>
         </head>
         <body>
-            <h1 style="margin-left: 30px;">Active User Percentage by (Week)：</h1>
-            <span style="margin-left: 30px;">Choose a group of admins who registered at:</span>
-            <select id="retentionDropDown" >
-                <!-- $TODO: consider get this list from server -->
-                <option>2013-3</option>c
-                <option>2013-4</option>
-                <option>2013-5</option>
-                <option>2013-6</option>
-                <option>2013-7</option>
-                <option>2013-8</option>
-                <option>2013-9</option>
-                <option>2013-10</option>
-                <option>2013-11</option>
-                <option>2013-12</option>
-                <option>2013-13</option>
-                <option>2013-14</option>
-                <option>2013-15</option>
-                <option>2013-16</option>
-                <option>2013-17</option>
-                <option>2013-18</option>
-                <option>2013-19</option>
-                <option>2013-20</option>
-                <option>2013-21</option>
-                <option>2013-22</option>
-                <option>2013-23</option>
-                <option>2013-24</option>
-                <option>2013-25</option>
-            </select>
-            <span>.($NOTE: 2013-3 means the 3rd week of 2013)</span>
-            <br />
-            <canvas id="myChart" width="800" height="400"></canvas>
+            <div data-role="page" id="retention"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">Active User Percentage by (Week)</h1>
+                </div>
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+	                    <li><a href="#featureusage">Feature Usage</a></li>
+                    </ul>
 
-            <br />
-            <br />
-            <br />
+                    <div style="padding-left:300px;">
+                            <label for="retentionDropDown" class="select">How many new users are first logon to TA portal by weeks?</label>
+                            <canvas id="userincreasecanvas" width="800" height="400"></canvas>
+                            <br /><br /><br /><br /><br />
+                            <label for="retentionDropDown" class="select">Choose a group of admins who registered at: (($NOTE: 2013-3 means the 3rd week of 2013)) to check this group's weekly retention rate</label>
+                            <select id="retentionDropDown" name="retentionDropDown" data-mini="true">
+                                <!-- $TODO: consider get this list from server -->
+                                <option>2013-3</option>c
+                                <option>2013-4</option>
+                                <option>2013-5</option>
+                                <option>2013-6</option>
+                                <option>2013-7</option>
+                                <option>2013-8</option>
+                                <option>2013-9</option>
+                                <option>2013-10</option>
+                                <option>2013-11</option>
+                                <option>2013-12</option>
+                                <option>2013-13</option>
+                                <option>2013-14</option>
+                                <option>2013-15</option>
+                                <option>2013-16</option>
+                                <option>2013-17</option>
+                                <option>2013-18</option>
+                                <option>2013-19</option>
+                                <option>2013-20</option>
+                                <option>2013-21</option>
+                                <option>2013-22</option>
+                                <option>2013-23</option>
+                                <option>2013-24</option>
+                                <option>2013-25</option>
+                            </select>
+                        <canvas id="myChart" width="800" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
 
-            <h1 style="margin-left: 30px;">Average Session Length：</h1>
-            <span style="margin-left: 30px;">Choose a group of admins who registered at:</span>
-            <select id="sessionLengthSelect" >
-                <!-- $TODO: consider get this list from server -->
-                <option>2013-3</option>c
-                <option>2013-4</option>
-                <option>2013-5</option>
-                <option>2013-6</option>
-                <option>2013-7</option>
-                <option>2013-8</option>
-                <option>2013-9</option>
-                <option>2013-10</option>
-                <option>2013-11</option>
-                <option>2013-12</option>
-                <option>2013-13</option>
-                <option>2013-14</option>
-                <option>2013-15</option>
-                <option>2013-16</option>
-                <option>2013-17</option>
-                <option>2013-18</option>
-                <option>2013-19</option>
-                <option>2013-20</option>
-                <option>2013-21</option>
-                <option>2013-22</option>
-                <option>2013-23</option>
-                <option>2013-24</option>
-                <option>2013-25</option>
-            </select>
-            <span>.($NOTE: 2013-3 means the 3rd week of 2013)</span>
-            <br />
-            <canvas id="sessionLengthCanvas" width="800" height="400"></canvas>
+            <div data-role="page" id="sessionlength"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">Average Session Length</h1>
+                </div>
+
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+	                    <li><a href="#featureusage">Feature Usage</a></li>
+                    </ul>
+
+                    <div style="padding-left:300px;">
+                        <span >Choose a group of admins who registered at: ($NOTE: 2013-3 means the 3rd week of 2013)</span>
+                        <select id="sessionLengthSelect" data-mini="true">
+                            <!-- $TODO: consider get this list from server -->
+                            <option>2013-3</option>c
+                            <option>2013-4</option>
+                            <option>2013-5</option>
+                            <option>2013-6</option>
+                            <option>2013-7</option>
+                            <option>2013-8</option>
+                            <option>2013-9</option>
+                            <option>2013-10</option>
+                            <option>2013-11</option>
+                            <option>2013-12</option>
+                            <option>2013-13</option>
+                            <option>2013-14</option>
+                            <option>2013-15</option>
+                            <option>2013-16</option>
+                            <option>2013-17</option>
+                            <option>2013-18</option>
+                            <option>2013-19</option>
+                            <option>2013-20</option>
+                            <option>2013-21</option>
+                            <option>2013-22</option>
+                            <option>2013-23</option>
+                            <option>2013-24</option>
+                            <option>2013-25</option>
+                        </select>
+                        <br />
+                        <canvas id="sessionLengthCanvas" width="800" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div data-role="page" id="featureusage"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">Feature Usage</h1>
+                </div>
+
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+	                    <li><a href="#featureusage">Feature Usage</a></li>
+                    </ul>
+
+                    <div style="padding-left:300px;">
+                        <span >Below is the most used features in tenant portal: (15 only)</span>
+                        <canvas id="mostused" width="1600" height="400"></canvas>
+
+                        <br />
+                        <br /> 
+                        <span >You can select any specific feature below to see daily usage trend: (15 only)</span>
+                        <select id="featuresSelection" data-mini="true"></select>
+
+                        <canvas id="featureTrend" width="1600" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
         </body>
 </html>

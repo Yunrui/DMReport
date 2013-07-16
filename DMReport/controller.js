@@ -5,8 +5,8 @@ $(document).ready(function () {
                 fillColor: "rgba(151,187,205,0.5)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-            },
+                pointStrokeColor: "#fff"
+            }
         ]
     }
 
@@ -16,8 +16,41 @@ $(document).ready(function () {
                 fillColor: "rgba(151,187,205,0.5)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-            },
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+
+    var data3 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+
+    var data4 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+
+    var data5 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
         ]
     }
 
@@ -107,6 +140,8 @@ $(document).ready(function () {
 
     LoadRetention(data, options);
     LoadSessionLength(data2, options);
+    LoadMostUsedFeatures(data3, options);
+    LoadUserIncrease(data5, options);
 
     $('#retentionDropDown').on('change', function() {
         LoadRetention(data, options);
@@ -114,6 +149,10 @@ $(document).ready(function () {
 
     $('#sessionLengthSelect').on('change', function () {
         LoadSessionLength(data2, options);
+    });
+
+    $("#featuresSelection").on('change', function () {
+        LoadFeatureTrend(data4, options);
     });
 });
 
@@ -167,7 +206,87 @@ function LoadSessionLength(data2, options) {
             //Get context with jQuery - using jQuery's .get() method.
             var ctx = $("#sessionLengthCanvas").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
+            var myNewChart = new Chart(ctx).Bar(data2, options);
+        }
+    });
+}
+
+function LoadMostUsedFeatures(data2, options) {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetMostUsedFeatures',
+        data: { },
+        success: function (result) {
+            result = result.d;
+            data2.labels = [];
+            data2.datasets[0].data = [];
+
+            for (var i = 0; i < result.length; i++) {
+                data2.labels.push(result[i].Key);
+                data2.datasets[0].data.push(result[i].Value);
+
+                $("#featuresSelection").append('<option>' + result[i].Key + '</option>');
+            }
+
+            //Get context with jQuery - using jQuery's .get() method.
+            var ctx = $("#mostused").get(0).getContext("2d");
+            //This will get the first returned node in the jQuery collection.
+            var myNewChart = new Chart(ctx).Bar(data2, options);
+        }
+    });
+}
+
+function LoadFeatureTrend(data2, options) {
+    var feature = $('#featuresSelection').find("option:selected")[0].innerText;
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetFeatureTrend',
+        data: {feature: feature},
+        success: function (result) {
+            result = result.d;
+            data2.labels = [];
+            data2.datasets[0].data = [];
+
+            for (var i = 0; i < result.length; i++) {
+                data2.labels.push(result[i].Date);
+                data2.datasets[0].data.push(result[i].Value);
+            }
+
+            //Get context with jQuery - using jQuery's .get() method.
+            var ctx = $("#featureTrend").get(0).getContext("2d");
+            //This will get the first returned node in the jQuery collection.
             var myNewChart = new Chart(ctx).Line(data2, options);
+        }
+    });
+}
+
+function LoadUserIncrease(data, options) {
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetUserIncrease',
+        data: { },
+        success: function (result) {
+            result = result.d;
+            data.labels = [];
+            data.datasets[0].data = [];
+
+            for (var i = 0; i < result.length; i++) {
+                data.labels.push(result[i].Date);
+                data.datasets[0].data.push(result[i].Value);
+            }
+
+            //Get context with jQuery - using jQuery's .get() method.
+            var ctx = $("#userincreasecanvas").get(0).getContext("2d");
+            //This will get the first returned node in the jQuery collection.
+            var myNewChart = new Chart(ctx).Line(data, options);
         }
     });
 }
