@@ -137,13 +137,14 @@ $(document).ready(function () {
         onAnimationComplete: null
 
     }
-
+    LoadUserIncreaseOption();
+    LoadSessionLengthOption();
     LoadRetention(data, options);
     LoadSessionLength(data2, options);
     LoadMostUsedFeatures(data3, options);
     LoadUserIncrease(data5, options);
 
-    $('#retentionDropDown').on('change', function() {
+    $('#retentionDropDown').on('change', function () {
         LoadRetention(data, options);
     });
 
@@ -156,10 +157,52 @@ $(document).ready(function () {
     });
 });
 
+function LoadUserIncreaseOption() {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetUserIncrease',
+        success: function (result) {
+            result = result.d;
+            for (var i = 0; i < result.length; i++) {
+                $("#retentionDropDown").append("<option>" + result[i].Date + "</option>");
+            }
+        }
+
+    });
+
+}
+
+function LoadSessionLengthOption() {
+    //alert("we are in the sessionLengthSelectOption");
+    var week;
+    if ($('#sessionLengthSelect').find("option:selected")[0] == null)
+        week = "2013-3";
+    else
+        week = $('#sessionLengthSelect').find("option:selected")[0].innerText;
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetSessionLength',
+        data: { week: week },
+        success: function (result) {
+            result = result.d;
+            for (var i = 0; i < result.length; i++) {
+                //alert(result[i].Date);
+                $("#sessionLengthSelect").append("<option>" + result[i].Date + "</option>");
+            }
+        }
+
+    });
+
+}
 
 function LoadRetention(data, options) {
+    if ($('#retentionDropDown').find("option:selected")[0] == null)
+        return;
     var week = $('#retentionDropDown').find("option:selected")[0].innerText;
-
     $.ajax({
         type: "GET",
         dataType: "json",
@@ -185,6 +228,8 @@ function LoadRetention(data, options) {
 }
 
 function LoadSessionLength(data2, options) {
+    if ($('#sessionLengthSelect').find("option:selected")[0] == null)
+        return;
     var week = $('#sessionLengthSelect').find("option:selected")[0].innerText;
 
     $.ajax({
@@ -201,6 +246,7 @@ function LoadSessionLength(data2, options) {
             for (var i = 0; i < result.length; i++) {
                 data2.labels.push(result[i].Date);
                 data2.datasets[0].data.push(result[i].Value);
+                //alert(result[i].Date);
             }
 
             //Get context with jQuery - using jQuery's .get() method.
@@ -217,7 +263,7 @@ function LoadMostUsedFeatures(data2, options) {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         url: 'DMService.svc/GetMostUsedFeatures',
-        data: { },
+        data: {},
         success: function (result) {
             result = result.d;
             data2.labels = [];
@@ -246,7 +292,7 @@ function LoadFeatureTrend(data2, options) {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         url: 'DMService.svc/GetFeatureTrend',
-        data: {feature: feature},
+        data: { feature: feature },
         success: function (result) {
             result = result.d;
             data2.labels = [];
@@ -272,7 +318,7 @@ function LoadUserIncrease(data, options) {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         url: 'DMService.svc/GetUserIncrease',
-        data: { },
+        data: {},
         success: function (result) {
             result = result.d;
             data.labels = [];
