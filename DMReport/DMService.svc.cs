@@ -226,7 +226,7 @@ namespace DMReport
             int userCount = 0;
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
-            string url = @"http://10.172.85.68:20550/sporequest/" + feature;
+            string url = @"http://10.172.85.68:20550/sporequest/" + feature + "/data";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "Get";
@@ -241,12 +241,12 @@ namespace DMReport
                 foreach (var cell in cells)
                 {
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Attribute("column").Value));
-                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
+                    var value = Double.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
 
                     if (!key.Contains("data:count"))
                     {
                         string tmp = key.Split(new char[] { ':', })[1];
-                        dic[tmp] = value;
+                        dic[tmp] = (int)value;
                     }
                 }
             }
