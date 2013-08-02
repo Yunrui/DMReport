@@ -105,7 +105,7 @@ namespace DMReport
                 {
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Attribute("key").Value));
                     var cell = row.Descendants("Cell").First();
-                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Value)));
+                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
 
                     dic[key] = value;
                 }
@@ -207,7 +207,7 @@ namespace DMReport
                 {
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Attribute("key").Value));
                     var cell = row.Descendants("Cell").First();
-                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Value)));
+                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
 
                     if (value >= 5000 && !string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
                     {
