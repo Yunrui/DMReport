@@ -11,20 +11,55 @@
             <script src="controller.js"></script>
         </head>
         <body>
+            <div data-role="page" id="featureusage"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">Feature Usage</h1>
+                </div>
+
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+                        <li><a href="#featureusage">Feature Usage</a></li>
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+	                    
+                    </ul>
+
+                    <div style="padding-left:300px;">
+                        <span >Below is the most used features in tenant portal: (15 only)</span>
+                        <canvas id="mostused" width="1600" height="400"></canvas>
+
+                        <br />
+                        <br /> 
+                        <span >You can select any specific feature below to see daily usage trend: (15 only)</span>
+                        <select id="featuresSelection" data-mini="true"></select>
+                        <canvas id="featureTrend" width="1600" height="400"></canvas>
+
+
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <span >Here is the performance of the featureTrend: (15 only)</span>
+                        <canvas id="featurePerfTrend" width="1600" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <div data-role="page" id="retention"> 
                 <div data-role="header" data-theme="b">
                     <h1 style="margin-left: 30px;">Active User Percentage by (Week)</h1>
                 </div>
                 <div data-role="content">
                     <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+                        <li><a href="#featureusage">Feature Usage</a></li>
 	                    <li><a href="#retention">Retention</a></li>
 	                    <li><a href="#sessionlength">Session Length</a></li>
-	                    <li><a href="#featureusage">Feature Usage</a></li>
+	                    
                     </ul>
 
                     <div style="padding-left:300px;">
                             <label for="retentionDropDown" class="select">How many new users are first logon to TA portal by weeks?</label>
-                            <canvas id="userincreasecanvas" width="800" height="400"></canvas>
+                            <canvas id="userincreasecanvas" width="800" height="400"></canvas> 
                             <br /><br /><br /><br /><br />
                             <label for="retentionDropDown" class="select">Choose a group of admins who registered at: (($NOTE: 2013-3 means the 3rd week of 2013)) to check this group's weekly retention rate</label>
                             <select id="retentionDropDown" name="retentionDropDown" data-mini="true">
@@ -41,9 +76,10 @@
 
                 <div data-role="content">
                     <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+                        <li><a href="#featureusage">Feature Usage</a></li>
 	                    <li><a href="#retention">Retention</a></li>
 	                    <li><a href="#sessionlength">Session Length</a></li>
-	                    <li><a href="#featureusage">Feature Usage</a></li>
+	                    
                     </ul>
 
                     <div style="padding-left:300px;">
@@ -52,32 +88,6 @@
                         </select>
                         <br />
                         <canvas id="sessionLengthCanvas" width="800" height="400"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div data-role="page" id="featureusage"> 
-                <div data-role="header" data-theme="b">
-                    <h1 style="margin-left: 30px;">Feature Usage</h1>
-                </div>
-
-                <div data-role="content">
-                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
-	                    <li><a href="#retention">Retention</a></li>
-	                    <li><a href="#sessionlength">Session Length</a></li>
-	                    <li><a href="#featureusage">Feature Usage</a></li>
-                    </ul>
-
-                    <div style="padding-left:300px;">
-                        <span >Below is the most used features in tenant portal: (15 only)</span>
-                        <canvas id="mostused" width="1600" height="400"></canvas>
-
-                        <br />
-                        <br /> 
-                        <span >You can select any specific feature below to see daily usage trend: (15 only)</span>
-                        <select id="featuresSelection" data-mini="true"></select>
-
-                        <canvas id="featureTrend" width="1600" height="400"></canvas>
                     </div>
                 </div>
             </div>

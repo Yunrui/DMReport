@@ -57,7 +57,7 @@ namespace DMReport
                     }
                     else
                     {
-                        string tmp = key.Split(new char[] {':',})[1];
+                        string tmp = key.Split(new char[] { ':', })[1];
                         var parts = tmp.Split(new char[] { '_', });
 
                         if (string.Equals("count", parts[1]))
@@ -71,7 +71,7 @@ namespace DMReport
             IList<DateValue> retentions = new List<DateValue>();
             foreach (string key in dic.Keys.OrderBy(c => c, new WeekComparer()))
             {
-                retentions.Add(new DateValue() { Date = key, Value = (double)dic[key] / (double)userCount});
+                retentions.Add(new DateValue() { Date = key, Value = (double)dic[key] / (double)userCount });
             }
 
             return retentions;
@@ -191,7 +191,7 @@ namespace DMReport
         {
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
-            string url = @"http://10.172.85.68:20550/sporequest/*/data:count";
+            string url = @"http://10.172.85.68:20550/sporequest/*/data/";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "Get";
@@ -206,7 +206,26 @@ namespace DMReport
                 foreach (var row in rows)
                 {
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Attribute("key").Value));
-                    var cell = row.Descendants("Cell").First();
+                    var cellNum = row.Descendants("Cell").Count();
+                    var cellCount = 0;
+                    var cellContent = "data:count_2012";
+
+                    for (var i = 0; i < cellNum; i++)
+                    {
+                        var temp1 = row.Descendants("Cell").ElementAt(i).Attribute("column").Value;
+                        var temp2 = Convert.FromBase64String(temp1);
+                        var temp3 = System.Text.Encoding.Default.GetString(temp2);
+                        if ((temp3).IndexOf("data:count_2013-") >= 0)
+                        {
+                            if (cellContent.CompareTo(temp3) < 0 ? true : false)
+                            {
+                                cellContent = temp3;
+                                cellCount = i;
+                            }
+                        }
+                    }
+                    var cell = row.Descendants("Cell").ElementAt(cellCount);
+
                     var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
 
                     if (value >= 5000 && !string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
@@ -243,7 +262,7 @@ namespace DMReport
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Attribute("column").Value));
                     var value = Double.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
 
-                    if (!key.Contains("data:count"))
+                    if (key.Contains("data") && !key.Contains("data:count"))
                     {
                         string tmp = key.Split(new char[] { ':', })[1];
                         dic[tmp] = (int)value;
@@ -259,6 +278,48 @@ namespace DMReport
 
             return retentions;
         }
+
+        [OperationContract]
+        [WebGet]
+        public IList<DateValue> GetFeaturePerfTrend(string feature)
+        {
+            int userCount = 0;
+            Dictionary<string, int> dic = new Dictionary<string, int>();
+
+            string url = @"http://10.172.85.68:20550/sporequest/" + feature + "/Perf";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "Get";
+            request.ContentType = "application/json";
+            // request.Accept = "text/json";
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                XDocument doc = XDocument.Load(response.GetResponseStream());
+
+                var cells = doc.Root.Descendants("Cell");
+
+                foreach (var cell in cells)
+                {
+                    var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Attribute("column").Value));
+                    var value = Double.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
+
+                    if (key.Contains("Perf"))
+                    {
+                        string tmp = key.Split(new char[] { ':', })[1];
+                        dic[tmp] = (int)value;
+                    }
+                }
+            }
+
+            IList<DateValue> retentions = new List<DateValue>();
+            foreach (string key in dic.Keys.OrderBy(c => c, new DayComparer()))
+            {
+                retentions.Add(new DateValue() { Date = key, Value = dic[key] });
+            }
+
+            return retentions;
+        }
+
 
         class WeekComparer : IComparer<string>
         {
@@ -285,8 +346,51 @@ namespace DMReport
                     {
                         return -1;
                     }
-
                     return 0;
+
+                }
+            }
+        }
+
+        class DayComparer : IComparer<string>
+        {
+            public int Compare(string X, string Y)
+            {
+                var xParts = X.Split(new char[] { '-' });
+                var yParts = Y.Split(new char[] { '-' });
+
+                if (Int32.Parse(xParts[0]) > Int32.Parse(yParts[0]))
+                {
+                    return 1;
+                }
+                else if (Int32.Parse(xParts[0]) < Int32.Parse(yParts[0]))
+                {
+                    return -1;
+                }
+                else
+                {
+                    if (Int32.Parse(xParts[1]) > Int32.Parse(yParts[1]))
+                    {
+                        return 1;
+                    }
+                    else if (Int32.Parse(xParts[1]) < Int32.Parse(yParts[1]))
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        var xTemp = xParts[2].Substring(0, 1);
+                        var yTemp = yParts[2].Substring(0, 1);
+                        if (Int32.Parse(xTemp) > Int32.Parse(yTemp))
+                        {
+                            return 1;
+                        }
+                        else if (Int32.Parse(xTemp) < Int32.Parse(yTemp))
+                        {
+                            return -1;
+                        }
+                        return 0;
+                    }
                 }
             }
         }

@@ -42,7 +42,36 @@ $(document).ready(function () {
             }
         ]
     }
-
+    var dataP5 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+    var dataP6 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+    var dataP9 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
     var data5 = {
         datasets: [
             {
@@ -122,7 +151,7 @@ $(document).ready(function () {
         datasetStrokeWidth: 2,
 
         //Boolean - Whether to fill the dataset with a colour
-        datasetFill: true,
+        datasetFill: false,
 
         //Boolean - Whether to animate the chart
         animation: true,
@@ -154,6 +183,7 @@ $(document).ready(function () {
 
     $("#featuresSelection").on('change', function () {
         LoadFeatureTrend(data4, options);
+        LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options)
     });
 });
 
@@ -300,6 +330,7 @@ function LoadFeatureTrend(data2, options) {
 
             for (var i = 0; i < result.length; i++) {
                 data2.labels.push(result[i].Date);
+                //alert("result : date    " + result[i].Date);
                 data2.datasets[0].data.push(result[i].Value);
             }
 
@@ -307,6 +338,56 @@ function LoadFeatureTrend(data2, options) {
             var ctx = $("#featureTrend").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
             var myNewChart = new Chart(ctx).Line(data2, options);
+        }
+    });
+}
+
+function LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options) {
+    //alert("we are in the loadFeaturePerfTrend");
+    var feature = $('#featuresSelection').find("option:selected")[0].innerText;
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetFeaturePerfTrend',
+        data: { feature: feature },
+        success: function (result) {
+            result = result.d;
+            dataP5.labels = [];
+            dataP5.datasets[0].data = [];
+            dataP6.labels = [];
+            dataP6.datasets[0].data = [];
+            dataP9.labels = [];
+            dataP9.datasets[0].data = [];
+
+            for (var i = 0; i < result.length; i++) {
+                if (result[i].Date.indexOf("P50") > 0) {
+                    //alert("date: "+result[i].Date);
+                    //alert("value: "+result[i].Value);
+                    dataP5.labels.push(result[i].Date);
+                    dataP5.datasets[0].data.push(result[i].Value);
+                }
+                else if (result[i].Date.indexOf("P66") > 0) {
+                    dataP6.labels.push(result[i].Date);
+                    dataP6.datasets[0].data.push(result[i].Value);
+                }
+                else if (result[i].Date.indexOf("P95") > 0) {
+                    dataP9.labels.push(result[i].Date);
+                    dataP9.datasets[0].data.push(result[i].Value);
+                }
+
+            }
+
+            //Get context with jQuery - using jQuery's .get() method.
+            var ctx = $("#featurePerfTrend").get(0).getContext("2d");
+            var myNewChartP = new Chart(ctx).LineThree(dataP5, dataP6, dataP9, options);
+            //This will get the first returned node in the jQuery collection.
+            /*
+            var myNewChartP5 = new Chart(ctx).Line(dataP5, options);
+            var myNewChartP6 = new Chart(ctx).Line(dataP6, options);
+            var myNewChartP9 = new Chart(ctx).Line(dataP9, options);
+            */
         }
     });
 }
