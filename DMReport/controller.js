@@ -299,17 +299,59 @@ function LoadMostUsedFeatures(data2, options) {
             data2.labels = [];
             data2.datasets[0].data = [];
 
-            for (var i = 0; i < result.length; i++) {
-                data2.labels.push(result[i].Key);
-                data2.datasets[0].data.push(result[i].Value);
 
-                $("#featuresSelection").append('<option>' + result[i].Key + '</option>');
+            //bubble sort
+            var i, j, tv, tk;
+            var n = result.length;
+            for (i = 0; i < n - 1; i++) {
+                for (j = 0; j < n - i - 1; j++) {
+                    if (result[j + 1].Value > result[j].Value) {
+                        tv = result[j + 1].Value;
+                        result[j + 1].Value = result[j].Value;
+                        result[j].Value = tv;
+
+                        tk = result[j + 1].Key;
+                        result[j + 1].Key = result[j].Key;
+                        result[j].Key = tk;
+                    }
+                }
             }
 
+            var selection = new Array(100);
             //Get context with jQuery - using jQuery's .get() method.
+            for (var i = 0; i < result.length && i < 50; i++) {
+                data2.labels.push(result[i].Key);
+                data2.datasets[0].data.push(result[i].Value);
+                selection[2 * i] = result[i].Key;
+                selection[2 * i + 1] = result[i].Value;
+            }
             var ctx = $("#mostused").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
             var myNewChart = new Chart(ctx).Bar(data2, options);
+
+
+            //bubble sort
+            var is, js, tvs, tks;
+            var ns = Math.min(result.length, 50);
+            for (is = 0; is < ns - 1; is++) {
+                for (js = 0; js < ns - is - 1; js++) {
+                    if (selection[2 * (js + 1)] < selection[2 * js]) {
+                        tvs = selection[2 * (js + 1)];
+                        selection[2 * (js + 1)] = selection[2 * js];
+                        selection[2 * js] = tvs;
+
+                        tks = selection[2 * (js + 1) + 1];
+                        selection[2 * (js + 1) + 1] = selection[2 * js + 1];
+                        selection[2 * js + 1] = tk;
+                    }
+                }
+            }
+            //alert("ns:" + ns);
+            for (var i = 0; i < ns; i++) {
+                $("#featuresSelection").append('<option>' + selection[2 * i] + '</option>');
+            }
+
+
         }
     });
 }
@@ -417,3 +459,4 @@ function LoadUserIncrease(data, options) {
         }
     });
 }
+
