@@ -1,4 +1,4 @@
-$(document).ready(function () {
+﻿$(document).ready(function () {
     var data = {
         datasets: [
             {
@@ -33,6 +33,26 @@ $(document).ready(function () {
     }
 
     var data4 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+    var data41 = {
+        datasets: [
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff"
+            }
+        ]
+    }
+    var data42 = {
         datasets: [
             {
                 fillColor: "rgba(151,187,205,0.5)",
@@ -170,7 +190,11 @@ $(document).ready(function () {
     LoadSessionLengthOption();
     LoadRetention(data, options);
     LoadSessionLength(data2, options);
-    LoadMostUsedFeatures(data3, options);
+
+    LoadMostUsedFeatures(data4, data42, options);
+    LoadFeatureTrend(data41, options);
+    LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options)
+
     LoadUserIncrease(data5, options);
 
     $('#retentionDropDown').on('change', function () {
@@ -182,17 +206,25 @@ $(document).ready(function () {
     });
 
     $("#featuresSelection").on('change', function () {
-        LoadFeatureTrend(data4, options);
+        LoadFeatureTrend(data41, options);
         LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options)
     });
 });
 
 function LoadUserIncreaseOption() {
+    var week;
+    /*
+    if ($('#retentionDropDown').find("option:selected")[0] == null)
+        week = "2015-3";
+    else
+        week = $('#retentionDropDown').find("option:selected")[0].innerText;
+        */
     $.ajax({
         type: "GET",
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         url: 'DMService.svc/GetUserIncrease',
+        data: { week: week },
         success: function (result) {
             result = result.d;
             for (var i = 0; i < result.length; i++) {
@@ -223,7 +255,10 @@ function LoadSessionLengthOption() {
                 //alert(result[i].Date);
                 $("#sessionLengthSelect").append("<option>" + result[i].Date + "</option>");
             }
+
         }
+
+
 
     });
 
@@ -287,17 +322,25 @@ function LoadSessionLength(data2, options) {
     });
 }
 
-function LoadMostUsedFeatures(data2, options) {
+function LoadMostUsedFeatures(data4, data42, options) {
+    //var feature = ($('#featuresSelection').find("option:selected")[0] == null) ? "createsite" : $('#featuresSelection').find("option:selected")[0].innerText;
+    var feature;
+    if ($('#sessionLengthSelect').find("option:selected")[0] == null)
+        feature = "createsite";
+    else
+        feature = $('#sessionLengthSelect').find("option:selected")[0].innerText;
     $.ajax({
         type: "GET",
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         url: 'DMService.svc/GetMostUsedFeatures',
-        data: {},
+        data: { feature: feature },
         success: function (result) {
             result = result.d;
-            data2.labels = [];
-            data2.datasets[0].data = [];
+            data4.labels = [];
+            data4.datasets[0].data = [];
+            data42.labels = [];
+            data42.datasets[0].data = [];
 
 
             //bubble sort
@@ -320,14 +363,29 @@ function LoadMostUsedFeatures(data2, options) {
             var selection = new Array(100);
             //Get context with jQuery - using jQuery's .get() method.
             for (var i = 0; i < result.length && i < 50; i++) {
-                data2.labels.push(result[i].Key);
-                data2.datasets[0].data.push(result[i].Value);
+                data4.labels.push(result[i].Key);
+                data4.datasets[0].data.push(result[i].Value);
                 selection[2 * i] = result[i].Key;
                 selection[2 * i + 1] = result[i].Value;
             }
             var ctx = $("#mostused").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
-            var myNewChart = new Chart(ctx).Bar(data2, options);
+            var myNewChart = new Chart(ctx).Bar(data4, options);
+
+
+            var sum = 0;
+            for (var i = 0; i < result.length && i < 50; i++) {
+                sum += result[i].Value;
+            }
+            for (var i = 0; i < result.length && i < 50; i++) {
+                data42.labels.push(result[i].Key);
+                data42.datasets[0].data.push(result[i].Value / sum);
+            }
+            var ctx = $("#mostusedPercentage").get(0).getContext("2d");
+            //This will get the first returned node in the jQuery collection.
+            var myNewChart = new Chart(ctx).Bar(data42, options);
+
+
 
 
             //bubble sort
@@ -346,18 +404,40 @@ function LoadMostUsedFeatures(data2, options) {
                     }
                 }
             }
-            //alert("ns:" + ns);
+            //alert("ns5:" + ns);
+            var select1 = new Array(100);
+            var len1 = 0;
+            //$("#featuresSelection option[index='0']").remove();
+            //$("#featuresSelection option[text='createsite']").remove();
+            //$("#select_id option[text='createsite']").attr("selected", true);   //设置Select的Text值为jQuery的项选中 
             for (var i = 0; i < ns; i++) {
-                $("#featuresSelection").append('<option>' + selection[2 * i] + '</option>');
+                if (selection[2 * i] > "createsite") {
+                    $("#featuresSelection").append('<option>' + selection[2 * i] + '</option>');
+                }
+                else if (selection[2 * i] < "createsite") {
+                    select1[len1] = selection[2 * i];
+                    len1++;
+                }
             }
-
-
+            for (var i = len1 - 1; i >= 0; i--) {
+                $("#featuresSelection").prepend("<option value='0'>" + select1[i] + "</option>");
+            }
         }
     });
+    /*
+    var obj = document.getElementById("featuresSelection");
+    alert("obj.options.length:" + obj.options.length);
+    for (var i = 0; i < obj.options.length; i++) {
+        //alert(obj.options[i].innerText);
+        if (obj.options[i].innerText.indexOf("createsite") > -1) {
+            obj.options[i].selected = 'selected';
+        }
+    }
+    */
 }
 
-function LoadFeatureTrend(data2, options) {
-    var feature = $('#featuresSelection').find("option:selected")[0].innerText;
+function LoadFeatureTrend(data41, options) {
+    var feature = ($('#featuresSelection').find("option:selected")[0] == null) ? "createsite" : $('#featuresSelection').find("option:selected")[0].innerText;
 
     $.ajax({
         type: "GET",
@@ -367,26 +447,26 @@ function LoadFeatureTrend(data2, options) {
         data: { feature: feature },
         success: function (result) {
             result = result.d;
-            data2.labels = [];
-            data2.datasets[0].data = [];
+            data41.labels = [];
+            data41.datasets[0].data = [];
 
             for (var i = 0; i < result.length; i++) {
-                data2.labels.push(result[i].Date);
+                data41.labels.push(result[i].Date);
                 //alert("result : date    " + result[i].Date);
-                data2.datasets[0].data.push(result[i].Value);
+                data41.datasets[0].data.push(result[i].Value);
             }
 
             //Get context with jQuery - using jQuery's .get() method.
             var ctx = $("#featureTrend").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
-            var myNewChart = new Chart(ctx).Line(data2, options);
+            var myNewChart = new Chart(ctx).Line(data41, options);
         }
     });
 }
 
 function LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options) {
     //alert("we are in the loadFeaturePerfTrend");
-    var feature = $('#featuresSelection').find("option:selected")[0].innerText;
+    var feature = ($('#featuresSelection').find("option:selected")[0] == null) ? "createsite" : $('#featuresSelection').find("option:selected")[0].innerText;
 
     $.ajax({
         type: "GET",
