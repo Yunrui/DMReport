@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿LENGTH = 10;
+$(document).ready(function () {
     var data = {
         datasets: [
             {
@@ -360,9 +361,9 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
 
-            var selection = new Array(100);
+            var selection = new Array(LENGTH * 2);
             //Get context with jQuery - using jQuery's .get() method.
-            for (var i = 0; i < result.length && i < 50; i++) {
+            for (var i = 0; i < result.length && i < LENGTH; i++) {
                 data4.labels.push(result[i].Key);
                 data4.datasets[0].data.push(result[i].Value);
                 selection[2 * i] = result[i].Key;
@@ -374,12 +375,12 @@ function LoadMostUsedFeatures(data4, data42, options) {
 
 
             var sum = 0;
-            for (var i = 0; i < result.length && i < 50; i++) {
+            for (var i = 0; i < result.length && i < LENGTH; i++) {
                 sum += result[i].Value;
             }
-            for (var i = 0; i < result.length && i < 50; i++) {
+            for (var i = 0; i < result.length && i < LENGTH; i++) {
                 data42.labels.push(result[i].Key);
-                data42.datasets[0].data.push(result[i].Value / sum);
+                data42.datasets[0].data.push(result[i].Value / sum * 100);
             }
             var ctx = $("#mostusedPercentage").get(0).getContext("2d");
             //This will get the first returned node in the jQuery collection.
@@ -390,7 +391,7 @@ function LoadMostUsedFeatures(data4, data42, options) {
 
             //bubble sort
             var is, js, tvs, tks;
-            var ns = Math.min(result.length, 50);
+            var ns = Math.min(result.length, LENGTH);
             for (is = 0; is < ns - 1; is++) {
                 for (js = 0; js < ns - is - 1; js++) {
                     if (selection[2 * (js + 1)] < selection[2 * js]) {
@@ -405,7 +406,7 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
             //alert("ns5:" + ns);
-            var select1 = new Array(100);
+            var select1 = new Array(LENGTH * 2);
             var len1 = 0;
             //$("#featuresSelection option[index='0']").remove();
             //$("#featuresSelection option[text='createsite']").remove();
