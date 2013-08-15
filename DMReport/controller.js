@@ -361,9 +361,9 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
 
-            var selection = new Array(LENGTH * 2);
+            var selection = new Array(50 * 2);
             //Get context with jQuery - using jQuery's .get() method.
-            for (var i = 0; i < result.length && i < LENGTH; i++) {
+            for (var i = 0; i < result.length && i < 50; i++) {
                 data4.labels.push(result[i].Key);
                 data4.datasets[0].data.push(result[i].Value);
                 selection[2 * i] = result[i].Key;
