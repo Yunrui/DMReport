@@ -1,4 +1,4 @@
-﻿LENGTH = 10;
+﻿LENGTH = 20;
 $(document).ready(function () {
     var data = {
         datasets: [
