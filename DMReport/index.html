@@ -9,6 +9,7 @@
             <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
             <script src="Chart.js"></script>
             <script src="controller.js"></script>
+
         </head>
         <body>
             <div data-role="page" id="featureusage"> 
@@ -21,6 +22,8 @@
                         <li><a href="#featureusage">Feature Usage</a></li>
 	                    <li><a href="#retention">Retention</a></li>
 	                    <li><a href="#sessionlength">Session Length</a></li>
+                        <li><a href="#arlreport">ARL Report</a></li>
+                        <li><a href="#totalarlreport">Total ARL Report</a></li>
 	                    
                     </ul>
 
@@ -28,8 +31,7 @@
                         <span >Below is the most used features in tenant portal: (15 only)</span>
                         <br />
                         <canvas id="mostused" width="1600" height="400"></canvas>
-                        <br />
-                        <span >Percentage of the most used features:</span>
+                        <span >Percentage the most used features in tenant portal: (15 only)</span>
                         <br />
                         <canvas id="mostusedPercentage" width="1600" height="400"></canvas>
 
@@ -63,6 +65,8 @@
                         <li><a href="#featureusage">Feature Usage</a></li>
 	                    <li><a href="#retention">Retention</a></li>
 	                    <li><a href="#sessionlength">Session Length</a></li>
+                        <li><a href="#arlreport">ARL Report</a></li>
+                        <li><a href="#totalarlreport">Total ARL Report</a></li>
 	                    
                     </ul>
 
@@ -88,6 +92,8 @@
                         <li><a href="#featureusage">Feature Usage</a></li>
 	                    <li><a href="#retention">Retention</a></li>
 	                    <li><a href="#sessionlength">Session Length</a></li>
+                        <li><a href="#arlreport">ARL Report</a></li>
+                        <li><a href="#totalarlreport">Total ARL Report</a></li>
 	                    
                     </ul>
 
@@ -100,5 +106,73 @@
                     </div>
                 </div>
             </div>
+
+            <div data-role="page" id="arlreport"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">ARL Report</h1>
+                </div>
+
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+                        <li><a href="#featureusage">Feature Usage</a></li>
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+                        <li><a href="#arlreport">ARL Report</a></li>
+                        <li><a href="#totalarlreport">Total ARL Report</a></li>
+	                    
+                    </ul>
+
+                    <div style="padding-left:300px;">
+                        <span >Choose a key whihch you want to know the support and confidence</span>
+                        <select id="arlKeySelect" data-mini="true">
+                        </select>
+                        <select name="ConfOrSupp" id="ConfOrSupp" data-role="slider">
+                            <option value="off">Confidence</option>
+                            <option value="on">Support</option>
+                        </select>
+
+                        <table id="arlKeyTable" border="1">
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                        <!--<canvas id="arlKeyCanvas" width="800" height="400"></canvas>-->
+                    </div>
+                </div>
+            </div>
+
+            <div data-role="page" id="totalarlreport"> 
+                <div data-role="header" data-theme="b">
+                    <h1 style="margin-left: 30px;">Total ARL Report</h1>
+                </div>
+
+                <div data-role="content">
+                    <ul data-role="listview" style="width:300px; float: left;" data-theme="e">
+                        <li><a href="#featureusage">Feature Usage</a></li>
+	                    <li><a href="#retention">Retention</a></li>
+	                    <li><a href="#sessionlength">Session Length</a></li>
+                        <li><a href="#arlreport">ARL Report</a></li>
+                        <li><a href="#totalarlreport">Total ARL Report</a></li>
+	                    
+                    </ul>
+
+                    <div style="padding-left:300px;">
+                        <span >Here is the total result of arl:</span>
+                        <br />
+                        <select name="TotalConfOrSupp" id="TotalConfOrSupp" data-role="slider">
+                            <option value="off">Confidence</option>
+                            <option value="on">Support</option>
+                        </select>
+
+                        <table id="totalArlTable" border="1">
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                        <!--<canvas id="arlKeyCanvas" width="800" height="400"></canvas>-->
+                    </div>
+                </div>
+            </div>
+
         </body>
 </html>

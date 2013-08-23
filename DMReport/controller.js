@@ -1,4 +1,5 @@
-﻿LENGTH = 10;
+﻿MOST_USAGE_PERCENTLENGTH_LENGTH = 20;
+MOST_USAGE_LENGTH = 50;
 $(document).ready(function () {
     var data = {
         datasets: [
@@ -189,6 +190,9 @@ $(document).ready(function () {
     }
     LoadUserIncreaseOption();
     LoadSessionLengthOption();
+    LoadArlSelectOption();
+    LoadTotalArlSelectFeature();
+    LoadConfOrSuppSelectFeature();
     LoadRetention(data, options);
     LoadSessionLength(data2, options);
 
@@ -197,6 +201,20 @@ $(document).ready(function () {
     LoadFeaturePerfTrend(dataP5, dataP6, dataP9, options)
 
     LoadUserIncrease(data5, options);
+
+    $('#TotalConfOrSupp').on('change', function () {
+        LoadTotalConfOrSuppSelectFeature();
+    });
+
+    $('#ConfOrSupp').on('change', function () {
+        LoadConfOrSuppSelectFeature();
+    });
+
+    $('#arlKeySelect').on('change', function () {
+        //$("#ConfOrSupp").attr("value", 'true');//设置value=XX的项目为当前选中项 
+        //LoadArlSelectFeature();
+        LoadConfOrSuppSelectFeature();
+    });
 
     $('#retentionDropDown').on('change', function () {
         LoadRetention(data, options);
@@ -258,9 +276,6 @@ function LoadSessionLengthOption() {
             }
 
         }
-
-
-
     });
 
 }
@@ -361,9 +376,9 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
 
-            var selection = new Array(LENGTH * 2);
+            var selection = new Array(MOST_USAGE_LENGTH * 2);
             //Get context with jQuery - using jQuery's .get() method.
-            for (var i = 0; i < result.length && i < LENGTH; i++) {
+            for (var i = 0; i < result.length && i < MOST_USAGE_LENGTH; i++) {
                 data4.labels.push(result[i].Key);
                 data4.datasets[0].data.push(result[i].Value);
                 selection[2 * i] = result[i].Key;
@@ -375,10 +390,10 @@ function LoadMostUsedFeatures(data4, data42, options) {
 
 
             var sum = 0;
-            for (var i = 0; i < result.length && i < LENGTH; i++) {
+            for (var i = 0; i < result.length && i < MOST_USAGE_PERCENTLENGTH_LENGTH; i++) {
                 sum += result[i].Value;
             }
-            for (var i = 0; i < result.length && i < LENGTH; i++) {
+            for (var i = 0; i < result.length && i < MOST_USAGE_PERCENTLENGTH_LENGTH; i++) {
                 data42.labels.push(result[i].Key);
                 data42.datasets[0].data.push(result[i].Value / sum * 100);
             }
@@ -391,7 +406,7 @@ function LoadMostUsedFeatures(data4, data42, options) {
 
             //bubble sort
             var is, js, tvs, tks;
-            var ns = Math.min(result.length, LENGTH);
+            var ns = Math.min(result.length, MOST_USAGE_LENGTH);
             for (is = 0; is < ns - 1; is++) {
                 for (js = 0; js < ns - is - 1; js++) {
                     if (selection[2 * (js + 1)] < selection[2 * js]) {
@@ -406,7 +421,7 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
             //alert("ns5:" + ns);
-            var select1 = new Array(LENGTH * 2);
+            var select1 = new Array(MOST_USAGE_LENGTH * 2);
             var len1 = 0;
             //$("#featuresSelection option[index='0']").remove();
             //$("#featuresSelection option[text='createsite']").remove();
@@ -425,16 +440,6 @@ function LoadMostUsedFeatures(data4, data42, options) {
             }
         }
     });
-    /*
-    var obj = document.getElementById("featuresSelection");
-    alert("obj.options.length:" + obj.options.length);
-    for (var i = 0; i < obj.options.length; i++) {
-        //alert(obj.options[i].innerText);
-        if (obj.options[i].innerText.indexOf("createsite") > -1) {
-            obj.options[i].selected = 'selected';
-        }
-    }
-    */
 }
 
 function LoadFeatureTrend(data41, options) {
@@ -541,3 +546,295 @@ function LoadUserIncrease(data, options) {
     });
 }
 
+function LoadArlSelectOption() {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetArlOption',
+        data: {/* week: week */ },
+        success: function (result) {
+            result = result.d;
+            //alert(result.length);
+            for (var i = 0; i < result.length; i++) {
+                $("#arlKeySelect").append("<option>" + result[i] + "</option>");
+            }
+
+        }
+    });
+}
+function LoadArlSelectFeature() {
+    if ($('#sessionLengthSelect').find("option:selected")[0] == null)
+        return;
+    var feature = $('#arlKeySelect').find("option:selected")[0].innerText;
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetArlFeature',
+        data: { feature: feature },
+        success: function (result) {
+            result = result.d;
+            //bubble sort
+            var i, j, td, tc, ts;
+            var n = result.length;
+            for (i = 0; i < n - 1; i++) {
+                for (j = 0; j < n - i - 1; j++) {
+                    if (result[j + 1].ConfidenceValue > result[j].ConfidenceValue) {
+                        tc = result[j + 1].ConfidenceValue;
+                        result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                        result[j].ConfidenceValue = tc;
+
+                        td = result[j + 1].DataValue;
+                        result[j + 1].DataValue = result[j].DataValue;
+                        result[j].DataValue = td;
+
+                        ts = result[j + 1].SupportValue;
+                        result[j + 1].SupportValue = result[j].SupportValue;
+                        result[j].SupportValue = ts;
+                    }
+                }
+            }
+            $('#arlKeyTable tbody').empty();
+            $("#arlKeyTable").append("<tr>" + "<th>BaseName</th>" + "<th></th>" + "<th>TargetName</th>" + "<th>Confidence</th>" + "<th>BaseSupport</th>" + "</tr>");
+            for (var i = 0; i < result.length; i++) {
+                var left = result[i].DataValue.substr(0, result[i].DataValue.indexOf("=>"));
+                var right = result[i].DataValue.substr(result[i].DataValue.indexOf("=>") + 2, result[i].DataValue.length - result[i].DataValue.indexOf("=>") - 2);
+                while (left.indexOf(",") != -1) {
+                    left = left.replace(",", "<br />");
+                }
+                while (right.indexOf(",") != -1) {
+                    right = right.replace(",", "<br />");
+                }
+                $("#arlKeyTable").append("<tr id =" + i + ">" + "<th>" + left + "</th>" + "<th>=></th>" + "<th>" + right + "</th>" + "<th>" + result[i].ConfidenceValue + "</th>" + "<th>" + result[i].SupportValue + "</th>" + "</tr>");
+                //it looks ugly
+                //$("#arlKeyTable").append("<tr>" + "<th>" + result[i].DataValue + "</th>" + "<th>" + result[i].ConfidenceValue + "</th>" + "<th>" + result[i].SupportValue + "</th>" + "</tr>");
+                /*we will get the wrong result here
+                $("#arlKeyTable").append("<tr>");
+                $("#arlKeyTable").append("<th>" + result[i].DataValue + "</th>");
+                $("#arlKeyTable").append("<th>" + result[i].ConfidenceValue + "</th>");
+                $("#arlKeyTable").append("<th>" + result[i].SupportValue + "</th>");
+                $("#arlKeyTable").append("</tr>");
+                */
+            }
+        }
+    });
+}
+
+function LoadTotalArlSelectFeature() {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetTotalArlFeature',
+        data: {},
+        success: function (result) {
+            result = result.d;
+
+            //bubble sort
+            var i, j, td, tc, ts;
+            var n = result.length;
+            for (i = 0; i < n - 1; i++) {
+                for (j = 0; j < n - i - 1; j++) {
+                    if (result[j + 1].ConfidenceValue > result[j].ConfidenceValue) {
+                        tc = result[j + 1].ConfidenceValue;
+                        result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                        result[j].ConfidenceValue = tc;
+
+                        td = result[j + 1].DataValue;
+                        result[j + 1].DataValue = result[j].DataValue;
+                        result[j].DataValue = td;
+
+                        ts = result[j + 1].SupportValue;
+                        result[j + 1].SupportValue = result[j].SupportValue;
+                        result[j].SupportValue = ts;
+                    }
+                }
+            }
+            $("#totalArlTable").append("<tr>" + "<th>BaseName</th>" + "<th></th>" + "<th>TargetName</th>" + "<th>Confidence</th>" + "<th>BaseSupport</th>" + "</tr>");
+            for (var i = 0; i < result.length; i++) {
+                var left = result[i].DataValue.substr(0, result[i].DataValue.indexOf("=>"));
+                var right = result[i].DataValue.substr(result[i].DataValue.indexOf("=>") + 2, result[i].DataValue.length - result[i].DataValue.indexOf("=>") - 2);
+                while (left.indexOf(",") != -1) {
+                    left = left.replace(",", "<br />");
+                }
+                while (right.indexOf(",") != -1) {
+                    right = right.replace(",", "<br />");
+                }
+                $("#totalArlTable").append("<tr id =" + i + ">" + "<th>" + left + "</th>" + "<th>=></th>" + "<th>" + right + "</th>" + "<th>" + result[i].ConfidenceValue + "</th>" + "<th>" + result[i].SupportValue + "</th>" + "</tr>");
+            }
+        }
+    });
+}
+
+function LoadConfOrSuppSelectFeature() {
+    //alert("we are in the LoadConfOrSuppSelectFeature");
+    if ($('#arlKeySelect').find("option:selected")[0] == null)
+        return;
+    var feature = $('#arlKeySelect').find("option:selected")[0].innerText;
+    var select = $('#ConfOrSupp').find("option:selected")[0].innerText;
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetArlFeature',
+        data: { feature: feature },
+        success: function (result) {
+            result = result.d;
+
+            if (select.indexOf("Support") >= 0) {
+                //alert("we are in the support");
+                //bubble sort
+                var i, j, td, tc, ts;
+                var n = result.length;
+                for (i = 0; i < n - 1; i++) {
+                    for (j = 0; j < n - i - 1; j++) {
+                        if (result[j + 1].SupportValue > result[j].SupportValue) {
+                            ts = result[j + 1].SupportValue;
+                            result[j + 1].SupportValue = result[j].SupportValue;
+                            result[j].SupportValue = ts;
+
+                            td = result[j + 1].DataValue;
+                            result[j + 1].DataValue = result[j].DataValue;
+                            result[j].DataValue = td;
+
+                            tc = result[j + 1].ConfidenceValue;
+                            result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                            result[j].ConfidenceValue = tc;
+                        }
+                    }
+                }
+            }
+            else {
+                //alert("we are in the confidence");
+                var i, j, td, tc, ts;
+                var n = result.length;
+                for (i = 0; i < n - 1; i++) {
+                    for (j = 0; j < n - i - 1; j++) {
+                        if (result[j + 1].ConfidenceValue > result[j].ConfidenceValue) {
+                            tc = result[j + 1].ConfidenceValue;
+                            result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                            result[j].ConfidenceValue = tc;
+
+                            td = result[j + 1].DataValue;
+                            result[j + 1].DataValue = result[j].DataValue;
+                            result[j].DataValue = td;
+
+                            ts = result[j + 1].SupportValue;
+                            result[j + 1].SupportValue = result[j].SupportValue;
+                            result[j].SupportValue = ts;
+                        }
+                    }
+                }
+            }
+            $('#arlKeyTable tbody').empty();
+            $("#arlKeyTable").append("<tr>" + "<th>BaseName</th>" + "<th></th>" + "<th>TargetName</th>" + "<th>Confidence</th>" + "<th>BaseSupport</th>" + "</tr>");
+            for (var i = 0; i < result.length; i++) {
+                //delete the first lines
+                // $("tr[id='" + (i) + "']").remove();
+
+                //tr_id = $("#arlKeyTable>tbody>tr:first").attr("id");
+                //$('#' + tr_id).remove();
+
+                var left = result[i].DataValue.substr(0, result[i].DataValue.indexOf("=>"));
+                var right = result[i].DataValue.substr(result[i].DataValue.indexOf("=>") + 2, result[i].DataValue.length - result[i].DataValue.indexOf("=>") - 2);
+                while (left.indexOf(",") != -1) {
+                    left = left.replace(",", "<br />");
+                }
+                while (right.indexOf(",") != -1) {
+                    right = right.replace(",", "<br />");
+                }
+                /*
+                left = left.replace(",", "<br />");
+                right = right.replace(",", "<br />");
+                if(left.indexOf(",")>=0){
+                    alter(left);
+                }
+                if(right.indexOf(",")>=0){
+                    alter(right);
+                }
+                */
+                $("#arlKeyTable").append("<tr id = " + i + ">" + "<th>" + left + "</th>" + "<th>=></th>" + "<th>" + right + "</th>" + "<th>" + result[i].ConfidenceValue + "</th>" + "<th>" + result[i].SupportValue + "</th>" + "</tr>");
+            }
+        }
+    });
+}
+
+function LoadTotalConfOrSuppSelectFeature() {
+    //alert("we are in the LoadToatalConfOrSuppSelectFeature");
+    var select = $('#TotalConfOrSupp').find("option:selected")[0].innerText;
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        url: 'DMService.svc/GetTotalArlFeature',
+        data: {},
+        success: function (result) {
+            result = result.d;
+            if (select.indexOf("Support") >= 0) {
+                //alert("we are in the support");
+                //bubble sort
+                var i, j, td, tc, ts;
+                var n = result.length;
+                for (i = 0; i < n - 1; i++) {
+                    for (j = 0; j < n - i - 1; j++) {
+                        if (result[j + 1].SupportValue > result[j].SupportValue) {
+                            ts = result[j + 1].SupportValue;
+                            result[j + 1].SupportValue = result[j].SupportValue;
+                            result[j].SupportValue = ts;
+
+                            td = result[j + 1].DataValue;
+                            result[j + 1].DataValue = result[j].DataValue;
+                            result[j].DataValue = td;
+
+                            tc = result[j + 1].ConfidenceValue;
+                            result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                            result[j].ConfidenceValue = tc;
+                        }
+                    }
+                }
+            }
+            else {
+                //alert("we are in the confidence");
+                var i, j, td, tc, ts;
+                var n = result.length;
+                for (i = 0; i < n - 1; i++) {
+                    for (j = 0; j < n - i - 1; j++) {
+                        if (result[j + 1].ConfidenceValue > result[j].ConfidenceValue) {
+                            tc = result[j + 1].ConfidenceValue;
+                            result[j + 1].ConfidenceValue = result[j].ConfidenceValue;
+                            result[j].ConfidenceValue = tc;
+
+                            td = result[j + 1].DataValue;
+                            result[j + 1].DataValue = result[j].DataValue;
+                            result[j].DataValue = td;
+
+                            ts = result[j + 1].SupportValue;
+                            result[j + 1].SupportValue = result[j].SupportValue;
+                            result[j].SupportValue = ts;
+                        }
+                    }
+                }
+            }
+            $('#totalArlTable tbody').empty();
+            $("#totalArlTable").append("<tr>" + "<th>BaseName</th>" + "<th></th>" + "<th>TargetName</th>" + "<th>Confidence</th>" + "<th>BaseSupport</th>" + "</tr>");
+            for (var i = 0; i < result.length; i++) {
+                //delete the first lines
+                //$("tr[id='" + (i) + "']").remove();
+
+                //tr_id = $("#TotalConfOrSupp>tbody>tr:first").attr("id");
+                //$('#' + tr_id).remove();
+
+                var left = result[i].DataValue.substr(0, result[i].DataValue.indexOf("=>"));
+                var right = result[i].DataValue.substr(result[i].DataValue.indexOf("=>") + 2, result[i].DataValue.length - result[i].DataValue.indexOf("=>") - 2);
+                while (left.indexOf(",") != -1) {
+                    left = left.replace(",", "<br />");
+                }
+                while (right.indexOf(",") != -1) {
+                    right = right.replace(",", "<br />");
+                }
+                $("#totalArlTable").append("<tr id = " + i + ">" + "<th>" + left + "</th>" + "<th>=></th>" + "<th>" + right + "</th>" + "<th>" + result[i].ConfidenceValue + "</th>" + "<th>" + result[i].SupportValue + "</th>" + "</tr>");
+            }
+        }
+    });
+}
