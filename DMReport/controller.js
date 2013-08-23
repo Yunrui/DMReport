@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 ﻿MOST_USAGE_PERCENTLENGTH_LENGTH = 20;
 MOST_USAGE_LENGTH = 50;
+=======
+﻿LENGTH = 20;
+>>>>>>> 8eabce49fa34cba3ed4b7d103bebcb941084e220
 $(document).ready(function () {
     var data = {
         datasets: [
@@ -376,9 +380,15 @@ function LoadMostUsedFeatures(data4, data42, options) {
                 }
             }
 
+<<<<<<< HEAD
             var selection = new Array(MOST_USAGE_LENGTH * 2);
             //Get context with jQuery - using jQuery's .get() method.
             for (var i = 0; i < result.length && i < MOST_USAGE_LENGTH; i++) {
+=======
+            var selection = new Array(50 * 2);
+            //Get context with jQuery - using jQuery's .get() method.
+            for (var i = 0; i < result.length && i < 50; i++) {
+>>>>>>> 8eabce49fa34cba3ed4b7d103bebcb941084e220
                 data4.labels.push(result[i].Key);
                 data4.datasets[0].data.push(result[i].Value);
                 selection[2 * i] = result[i].Key;
