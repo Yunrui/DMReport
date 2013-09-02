@@ -232,6 +232,7 @@ namespace DMReport
                     if (cellContent.CompareTo(monthMax) > 0 ? true : false)
                     {
                         monthMax = cellContent;
+                        // if the data is not the newest, the data before will be zero
                         foreach (KeyValuePair<string, int> item in dic)
                         {
                             dict[item.Key] = 0;
@@ -260,27 +261,6 @@ namespace DMReport
                         }
                     }
 
-                    // if the data is not the newest, the data before will be zero
-                    /*
-                    if (cellContent.CompareTo(monthMax) > 0 ? true : false)
-                    {
-                        monthMax = cellContent;
-
-                        foreach (KeyValuePair<string, int> item in dic)
-                        {
-                            dic[key] = 0;
-                        }
-                    }
-
-                    var cell = row.Descendants("Cell").ElementAt(cellCount);
-
-                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
-
-                    if (value >= 100 && !string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
-                    {
-                        dic[key] = value;
-                    }
-                     */
                 }
                 foreach (KeyValuePair<string, int> item in dict)
                 {
