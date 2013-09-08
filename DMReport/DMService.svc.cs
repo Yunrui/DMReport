@@ -229,7 +229,8 @@ namespace DMReport
                         }
                     }
 
-                    if (cellContent.CompareTo(monthMax) > 0 ? true : false)
+                    //if (cellContent.CompareTo(monthMax) > 0 ? true : false)
+                    if ((cellContent.CompareTo(monthMax) > 0 ? true : false) && (cellContent.CompareTo("data:count_2013-09") < 0 ? true : false))
                     {
                         monthMax = cellContent;
                         // if the data is not the newest, the data before will be zero
