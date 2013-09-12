@@ -221,7 +221,7 @@ namespace DMReport
                         var temp3 = System.Text.Encoding.Default.GetString(temp2);
                         if ((temp3).IndexOf("data:count_2013-") >= 0)
                         {
-                            if (cellContent.CompareTo(temp3) < 0 ? true : false)
+                            if ((cellContent.CompareTo(temp3) < 0 ? true : false) && (temp3.CompareTo("data:count_2013-09") < 0 ? true : false))
                             {
                                 cellContent = temp3;
                                 cellCount = i;
