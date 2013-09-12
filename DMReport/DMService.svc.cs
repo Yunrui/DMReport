@@ -207,13 +207,11 @@ namespace DMReport
                 var rows = doc.Root.Descendants("Row");
                 var monthMax = "data:count_2000-00";
 
+                var monthSec = "data:count_2000-00";
                 foreach (var row in rows)
                 {
                     var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Attribute("key").Value));
                     var cellNum = row.Descendants("Cell").Count();
-                    var cellCount = 0;
-                    var cellContent = "data:count_2000-00";
-
                     for (var i = 0; i < cellNum; i++)
                     {
                         var temp1 = row.Descendants("Cell").ElementAt(i).Attribute("column").Value;
@@ -221,58 +219,47 @@ namespace DMReport
                         var temp3 = System.Text.Encoding.Default.GetString(temp2);
                         if ((temp3).IndexOf("data:count_2013-") >= 0)
                         {
-                            if ((cellContent.CompareTo(temp3) < 0 ? true : false) && (temp3.CompareTo("data:count_2013-09") < 0 ? true : false))
+                            if (monthMax.CompareTo(temp3) <= 0 ? true : false)
                             {
-                                cellContent = temp3;
-                                cellCount = i;
+                                monthMax = temp3;
+                            }
+                            else
+                            {
+                                if (monthSec.CompareTo(temp3) <= 0 ? true : false)
+                                {
+                                    monthSec = temp3;
+                                }
                             }
                         }
                     }
-
-                    //if (cellContent.CompareTo(monthMax) > 0 ? true : false)
-                    if ((cellContent.CompareTo(monthMax) > 0 ? true : false) && (cellContent.CompareTo("data:count_2013-09") < 0 ? true : false))
-                    {
-                        monthMax = cellContent;
-                        // if the data is not the newest, the data before will be zero
-                        foreach (KeyValuePair<string, int> item in dic)
-                        {
-                            dict[item.Key] = 0;
-                        }
-
-                        var cell = row.Descendants("Cell").ElementAt(cellCount);
-
-                        var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
-
-                        if (!string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
-                        {
-                            dic[key] = value;
-                            dict[key] = value;
-                        }
-                    }
-                    else if (cellContent.CompareTo(monthMax) == 0 ? true : false)
-                    {
-                        var cell = row.Descendants("Cell").ElementAt(cellCount);
-
-                        var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
-
-                        if (!string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
-                        {
-                            dic[key] = value;
-                            dict[key] = value;
-                        }
-                    }
-
                 }
-                foreach (KeyValuePair<string, int> item in dict)
+                foreach (var row in rows)
                 {
-                    if (dict[item.Key] >= 1)
+                    var key = Encoding.UTF8.GetString(System.Convert.FromBase64String(row.Attribute("key").Value));
+                    var cellNum = row.Descendants("Cell").Count();
+                    var cellCount = 0;
+                    for (var i = 0; i < cellNum; i++)
                     {
-                        dics[item.Key] = dict[item.Key];
+                        var temp1 = row.Descendants("Cell").ElementAt(i).Attribute("column").Value;
+                        var temp2 = Convert.FromBase64String(temp1);
+                        var temp3 = System.Text.Encoding.Default.GetString(temp2);
+                        if ((temp3).IndexOf(monthSec) >= 0)
+                        {
+                            cellCount = i;
+                            break;
+                        }
+                    }
+                    var cell = row.Descendants("Cell").ElementAt(cellCount);
+
+                    var value = Int32.Parse(Encoding.UTF8.GetString(System.Convert.FromBase64String(cell.Value)));
+
+                    if (value>=1 && !string.Equals("sitecollections", key) && !string.Equals("viewproperties", key))
+                    {
+                        dic[key] = value;
                     }
                 }
             }
-
-            return dics;
+            return dic;
         }
 
         [OperationContract]
